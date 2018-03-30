@@ -1,5 +1,34 @@
 # Crowdin manager
 
+Structure of files and directories on the local machine
+
+```
+Example
+   └── locales
+      ├── ru
+      |   ├── folder
+      |   |   └── translations.json
+      |   ├── translations.json
+      |   └── ...
+      ├── en
+      |   ├── folder
+      |   |   └── translations.json
+      |   ├── translations.json
+      |   └── ...
+      └── ...
+```
+
+Structure of files and directories in Crowdin
+
+```
+TestBranch
+   └── MyProject
+      ├── folder
+      |   └── translations.json
+      ├── translations.json
+      └── ...
+```
+
 ## Push source file
 
 ```ps
