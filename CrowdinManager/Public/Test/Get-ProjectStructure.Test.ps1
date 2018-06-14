@@ -1,4 +1,6 @@
-Import-module $PSScriptRoot\..\Get-CrowdinProjectStructure.psm1 -Force
+Import-module $PSScriptRoot\..\Get-ProjectStructure.psm1 -Force
+Import-module $PSScriptRoot\..\..\Private\Get-CrowdinNodes.psm1 -Force
+
 
 $json = '
 {
@@ -44,26 +46,10 @@ $json = '
 }
 '
 
-Describe 'Get-CrowdinProjectStructure' {
+Describe 'Get-CrowdinNodes' {
 
     $info = ConvertFrom-Json -InputObject $json
-    $projectStructure = Get-CrowdinProjectStructure $info
-
-    Context 'Test-ItemExists' {
-
-        It "Given valid -Path '<Path>' -Type '<Type>', it returns '<Expected>'" -TestCases @(
-            @{ Path = 'MyProject'; Type = 'directory'; Expected = $true },
-            @{ Path = 'MyProject\Folder1'; Type = 'directory'; Expected = $true },
-            @{ Path = 'MyProject\Folder1\translations.json'; Type = 'file'; Expected = $true },
-            @{ Path = 'MyProject\Folder1\Folder11\translations.json'; Type = 'file'; Expected = $true }
-        ) {
-            param ($Path, $Type, $Expected)
-
-            $result = Test-ItemExists $projectStructure $Path $Type
-
-            $result | Should -Be $Expected
-        }
-    }
+    $projectStructure = Get-CrowdinNodes $info.files
 
     Context 'Get-BranchNode' {
 
@@ -73,6 +59,29 @@ Describe 'Get-CrowdinProjectStructure' {
             param ($Branch, $Expected)
 
             $result = Get-BranchNode $projectStructure $Branch
+
+            $result | Should -Be $Expected
+        }
+    }
+
+    Context 'Test-ItemExists' {
+
+        It "Given valid -Path '<Path>' -Type '<Type>', it returns '<Expected>'" -TestCases @(
+            @{ Path = 'MyProject'; Type = 'directory'; Expected = $true },
+            @{ Path = 'MyProject\Folder1'; Type = 'directory'; Expected = $true },
+            @{ Path = 'MyProject\Folder1\translations.json'; Type = 'file'; Expected = $true },
+            @{ Path = 'MyProject\Folder1\Folder11\translations.json'; Type = 'file'; Expected = $true }
+            @{ Path = 'Example1'; Type = 'directory'; Branch = 'Test_Branch'; Expected = $true }
+        ) {
+            param ($Path, $Type, $Branch = '', $Expected)
+
+            $nodes = $projectStructure
+            if($Branch) {
+                $branchNode = Get-BranchNode $projectStructure $Branch
+                $nodes = $branchNode.files
+            }
+
+            $result = Test-ItemExists $nodes $Path $Type
 
             $result | Should -Be $Expected
         }

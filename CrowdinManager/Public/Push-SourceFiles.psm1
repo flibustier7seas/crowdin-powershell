@@ -92,7 +92,7 @@ function Push-SourceFiles {
         ProjectKey = $ProjectKey
     }
 
-    $projectStructure = Get-ProjectStructure $ProjectId $ProjectKey
+    [array]$projectStructure = Get-ProjectStructure $ProjectId $ProjectKey
 
     $nodes = $projectStructure
     if ($Branch) {
@@ -108,7 +108,7 @@ function Push-SourceFiles {
         }
     }
 
-    $files = Get-ChildItem -Path $SourceRootDirectory -Recurse `
+    [array]$files = Get-ChildItem -Path $SourceRootDirectory -Recurse `
         | Where-Object {$_.FullName -match $FilePathPattern}
 
     foreach ($file in $files) {
@@ -132,16 +132,6 @@ function Push-SourceFiles {
 
         Write-Verbose "Push file $($filePath) to $($crowdinFilePath). Is Success: $($response.Success)"
     }
-}
-
-function Get-ProjectStructure ([string]$ProjectId, [string]$ProjectKey) {
-    $info = Get-CrowdinProjectInfo `
-        -ProjectId $ProjectId `
-        -ProjectKey $ProjectKey
-
-    $projectStructure = Get-CrowdinProjectStructure $info
-
-    return $projectStructure
 }
 
 function Add-NewBranch([string]$ProjectId, [string]$ProjectKey, [string]$Branch) {
