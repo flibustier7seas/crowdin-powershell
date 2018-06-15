@@ -60,7 +60,9 @@ function Save-Translations {
     $translationsZipPath = "$tempDirectoryPath\translations.zip"
 
     try {
-        Export-CrowdinTranslations @commonArguments
+        $buildResult = Export-CrowdinTranslations @commonArguments
+        Write-Verbose "Build translations: $($buildResult | Out-String))"
+
         Save-CrowdinTranslations @commonArguments -FilePath $translationsZipPath
         [System.IO.Compression.ZipFile]::ExtractToDirectory($translationsZipPath, $Path)
     }

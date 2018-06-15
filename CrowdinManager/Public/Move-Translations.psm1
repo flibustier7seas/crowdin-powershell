@@ -44,5 +44,9 @@ function Move-Translations {
         $filePath = Get-FilePathByTemplate $fullName $SourcePattern $DestTemplate
 
         Move-Item $fullName $filePath -Force
+
+        Write-Debug "Moved $($fullName) to $($filePath)"
     }
+
+    Write-Verbose "Moved $($files.Length) files"
 }
